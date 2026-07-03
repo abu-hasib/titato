@@ -144,7 +144,7 @@ function App() {
 
           <Stack direction="row" spacing={4} alignItems="center">
             <ScoreBoard score={scores.player1} player="⚔️" />
-            <GameStatus gameState={gameState} />
+            <GameStatus gameState={gameState} playerTurn={playerTurn}/>
             <ScoreBoard score={scores.player2} player="🗡️" />
           </Stack>
           <GameBoard
@@ -179,7 +179,7 @@ function ScoreBoard({ score, player }) {
         sx={{
           fontSize: { xs: "1rem", sm: "1.3rem" },
           fontWeight: "bold",
-          color: "black",
+          color: "#fca136",
           textShadow: "1px 1px 3px rgba(0,0,0,0.7)",
           textTransform: "uppercase",
           letterSpacing: "1px",

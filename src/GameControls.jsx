@@ -1,4 +1,12 @@
-import { Box, Button, MenuItem, Select, Typography } from "@mui/material";
+import { RestartAltOutlined } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  IconButton,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 
 export function GameControls({ difficulty, onDifficultyChange, onNewGame }) {
   return (
@@ -10,7 +18,12 @@ export function GameControls({ difficulty, onDifficultyChange, onNewGame }) {
         padding: { xs: "12px", sm: "16px" },
         backgroundColor: "#4a3728",
         borderRadius: "8px",
+        transition: 'all 0.3s ease',
         border: "2px solid #8b6f47",
+          "&:hover": {
+            transform: "scale(1.1)",
+          },
+      
       }}
     >
       {/* <Box>
@@ -49,9 +62,9 @@ export function GameControls({ difficulty, onDifficultyChange, onNewGame }) {
         </Select>
       </Box> */}
 
-      <Button onClick={onNewGame} variant="contained">
-        Restart
-      </Button>
+      <IconButton onClick={onNewGame} variant="contained">
+        <RestartAltOutlined color="#3e2723" />
+      </IconButton>
     </Box>
   );
 }

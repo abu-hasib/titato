@@ -14,14 +14,14 @@ export function Cell({ value, onClick, disabled }) {
       sx={{
         width: { xs: '80px', sm: '100px' },
         height: { xs: '80px', sm: '100px' },
-        backgroundColor: value ? '#3e2723' : '#5d4037',
-        border: '2px solid #8b6f47',
+        backgroundColor: value ? '#3e2723' : 'hsl(14, 25%, 29%, .5)',
+        border: '2px solid #fca136',
         fontSize: { xs: '2rem', sm: '2.5rem' },
         color: '#d4af37',
         cursor: value !== null ? 'default' : 'pointer',
         transition: 'all 0.3s ease',
         '&:hover': {
-          backgroundColor: value ? '#3e2723' : '#6d4c41',
+          backgroundColor: value ? '#6d4c41' : '#3e2723',
           transform: value ? 'scale(1)' : 'scale(1.05)',
         },
         '&:disabled': {

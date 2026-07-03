@@ -3,11 +3,11 @@ import { Box, Typography } from '@mui/material'
 export function GameStatus({ gameState, playerTurn }) {
   const getStatusText = () => {
     if (gameState === 'playing') {
-      return playerTurn ? '⚔️ YOUR TURN' : '💣 COMPUTER THINKING...'
+      return playerTurn ? '⚔️ Turn' : '🗡️ Turn'
     }
-    if (gameState === 'player-win') return '⚔️ YOU WIN!'
-    if (gameState === 'computer-win') return '💣 COMPUTER WINS!'
-    if (gameState === 'draw') return '🤝 IT\'S A DRAW!'
+    if (gameState === 'player-win') return '⚔️ WINS'
+    if (gameState === 'computer-win') return '🗡️ WINS!'
+    if (gameState === 'draw') return '🛡️ IT\'S A DRAW!'
     return ''
   }
 
