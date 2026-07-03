@@ -5,14 +5,15 @@ export function GameBoard({ board, onCellClick, disabled }) {
   return (
     <Box
       sx={{
+        margin: "auto",
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: { xs: '8px', sm: '10px' },
         padding: { xs: '16px', sm: '20px' },
-        backgroundColor: '#2c1810',
+        // backgroundColor: '#2c1810',
         borderRadius: '8px',
-        border: '3px solid #8b6f47',
-        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)',
+        // border: '3px solid #8b6f47',
+        // boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)',
       }}
     >
       {board.map((value, index) => (

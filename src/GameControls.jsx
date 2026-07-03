@@ -1,19 +1,19 @@
-import { Box, Button, MenuItem, Select, Typography } from '@mui/material'
+import { Box, Button, MenuItem, Select, Typography } from "@mui/material";
 
 export function GameControls({ difficulty, onDifficultyChange, onNewGame }) {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        padding: { xs: '12px', sm: '16px' },
-        backgroundColor: '#4a3728',
-        borderRadius: '8px',
-        border: '2px solid #8b6f47',
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+        padding: { xs: "12px", sm: "16px" },
+        backgroundColor: "#4a3728",
+        borderRadius: "8px",
+        border: "2px solid #8b6f47",
       }}
     >
-      <Box>
+      {/* <Box>
         <Typography
           sx={{
             color: '#d4af37',
@@ -47,30 +47,11 @@ export function GameControls({ difficulty, onDifficultyChange, onNewGame }) {
           <MenuItem value="medium">Medium (Smart)</MenuItem>
           <MenuItem value="hard">Hard (Unbeatable)</MenuItem>
         </Select>
-      </Box>
+      </Box> */}
 
-      <Button
-        onClick={onNewGame}
-        variant="contained"
-        sx={{
-          backgroundColor: '#d4af37',
-          color: '#2c1810',
-          fontWeight: 'bold',
-          fontSize: { xs: '1rem', sm: '1.1rem' },
-          padding: '12px 24px',
-          borderRadius: '8px',
-          textTransform: 'uppercase',
-          transition: 'all 0.3s ease',
-          border: '2px solid #a68d2e',
-          '&:hover': {
-            backgroundColor: '#a68d2e',
-            boxShadow: '0 4px 12px rgba(212, 175, 55, 0.4)',
-            transform: 'scale(1.05)',
-          },
-        }}
-      >
-        NEW GAME
+      <Button onClick={onNewGame} variant="contained">
+        Restart
       </Button>
     </Box>
-  )
+  );
 }
