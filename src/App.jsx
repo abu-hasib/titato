@@ -6,6 +6,7 @@ import {
   ThemeProvider,
   createTheme,
   Stack,
+  Button,
 } from "@mui/material";
 import { SplashScreen } from "./SplashScreen";
 import { GameBoard } from "./GameBoard";
@@ -14,6 +15,9 @@ import { GameControls } from "./GameControls";
 import { initializeGame, getWinner, isBoardFull } from "./gameLogic";
 import { getComputerMove } from "./AI";
 import { SoundManager } from "./SoundManager";
+import useSimpleReducer from "./hooks/useSimpleReducer";
+import GameTitle from "/images/gametitle.png";
+import PlayNow from "/images/cta.png";
 
 const theme = createTheme({
   palette: {
@@ -27,6 +31,7 @@ const theme = createTheme({
 });
 
 function App() {
+  const { status, dispatch } = useSimpleReducer({});
   const [showSplash, setShowSplash] = useState(true);
   const [board, setBoard] = useState(initializeGame());
   const [gameState, setGameState] = useState("playing");
@@ -36,6 +41,11 @@ function App() {
 
   useEffect(() => {
     SoundManager.init();
+    const timer = setTimeout(() => {
+      dispatch({ type: "waiting" });
+    }, 2500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const checkGameEnd = useCallback((currentBoard) => {
@@ -43,13 +53,13 @@ function App() {
     if (winner === "X") {
       setGameState("player-win");
       SoundManager.playVictorySound();
-      setScores(prev => ({ ...prev, player1: prev.player1++ }));
+      setScores((prev) => ({ ...prev, player1: prev.player1++ }));
       return true;
     }
     if (winner === "O") {
       setGameState("computer-win");
       SoundManager.playVictorySound();
-      setScores(prev => ({ ...prev, player2: prev.player2++ }));
+      setScores((prev) => ({ ...prev, player2: prev.player2++ }));
       return true;
     }
     if (isBoardFull(currentBoard)) {
@@ -103,65 +113,125 @@ function App() {
     setDifficulty(newDifficulty);
   };
 
-  if (showSplash) {
+  if (status === "starting") {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
-  }
-
-  return (
-    <ThemeProvider theme={theme}>
+  } else if (status === "waiting") {
+    return (
       <Box
         sx={{
           backgroundImage: "url(/images/bg-image.png)",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center center",
           backgroundSize: "cover",
-          padding: { xs: "5em", md: "10em" },
+          // padding: { xs: "5em", md: "20em" },
+          height: "100vh",
         }}
       >
-        <Container
-          maxWidth="sm"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            alignItems: "center",
-          }}
-        >
-          {/* <Typography
-            variant="h1"
+        <Stack alignItems="center" height="90%" justifyContent="space-between">
+          <Box>
+            <img src={GameTitle} alt="title" width={500} />
+          </Box>
+          <Box
+            component="button"
+            type="button"
+            onClick={() => dispatch({ type: "playing" })}
             sx={{
-              textAlign: 'center',
-              fontSize: { xs: '2rem', sm: '2.5rem' },
-              fontWeight: 'bold',
-              color: '#d4af37',
-              textShadow: '2px 2px 8px rgba(0,0,0,0.8)',
-              marginBottom: '10px',
-              letterSpacing: '2px',
+              border: "none",
+              background: "transparent",
+              padding: 0,
+              cursor: "pointer",
+              appearance: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform 0.15s ease, filter 0.15s ease",
+              filter: "drop-shadow(0 12px 18px rgba(0,0,0,0.35))",
+              transformOrigin: "center",
+              "&:hover": {
+                transform: "translateY(-3px) rotate(-1deg)",
+                filter: "drop-shadow(0 16px 24px rgba(0,0,0,0.42))",
+              },
+              "&:active": {
+                transform: "translateY(4px) rotate(1deg)",
+                filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.28))",
+              },
             }}
           >
-            ⚔️ ANCIENT CLASH 💣
-          </Typography> */}
-
-          <Stack direction="row" spacing={4} alignItems="center">
-            <ScoreBoard score={scores.player1} player="⚔️" />
-            <GameStatus gameState={gameState} playerTurn={playerTurn}/>
-            <ScoreBoard score={scores.player2} player="🗡️" />
-          </Stack>
-          <GameBoard
-            board={board}
-            onCellClick={handleCellClick}
-            disabled={!playerTurn || gameState !== "playing"}
-          />
-
-          <GameControls
-            difficulty={difficulty}
-            onDifficultyChange={handleDifficultyChange}
-            onNewGame={handleNewGame}
-          />
-        </Container>
+            <img src={PlayNow} alt="Play now" width={500} />
+          </Box>
+        </Stack>
       </Box>
-    </ThemeProvider>
-  );
+    );
+  } else if (status === "playing") {
+    return (
+      <ThemeProvider theme={theme}>
+        <Box
+          sx={{
+            backgroundImage: "url(/images/bg-image.png)",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center center",
+            backgroundSize: "cover",
+            height: "100vh",
+          }}
+        >
+          <Box
+            component="button"
+            onClick={() => dispatch({ type: "waiting" })}
+            sx={{
+              cursor: "pointer",
+              background: "transparent",
+              transition: "transform 0.15s ease, filter 0.15s ease",
+              filter: "drop-shadow(0 12px 18px rgba(0,0,0,0.35))",
+              transformOrigin: "center",
+              border: "none",
+              "&:hover": {
+                transform: "translateY(-3px) rotate(-1deg)",
+                filter: "drop-shadow(0 16px 24px rgba(0,0,0,0.42))",
+              },
+              "&:active": {
+                transform: "translateY(4px) rotate(1deg)",
+                filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.28))",
+              },
+            }}
+            width="50%"
+          >
+            <img
+              src="/images/back.png"
+              width={200}
+              alt=""
+              style={{ rotate: "180deg" }}
+            />
+          </Box>
+          <Container
+            maxWidth="sm"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              alignItems: "center",
+            }}
+          >
+            <Stack direction="row" spacing={4} alignItems="center">
+              <ScoreBoard score={scores.player1} player="⚔️" />
+              <GameStatus gameState={gameState} playerTurn={playerTurn} />
+              <ScoreBoard score={scores.player2} player="🗡️" />
+            </Stack>
+            <GameBoard
+              board={board}
+              onCellClick={handleCellClick}
+              disabled={!playerTurn || gameState !== "playing"}
+            />
+
+            <GameControls
+              difficulty={difficulty}
+              onDifficultyChange={handleDifficultyChange}
+              onNewGame={handleNewGame}
+            />
+          </Container>
+        </Box>
+      </ThemeProvider>
+    );
+  }
 }
 
 function ScoreBoard({ score, player }) {
