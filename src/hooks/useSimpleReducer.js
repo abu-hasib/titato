@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { act, useReducer } from "react";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -14,15 +14,13 @@ const reducer = (state, action) => {
       return {
         ...state,
         status: "waiting",
-        payload: action.payload,
-        data: action.data ?? null,
+        data: {...state.data, ...action.data},
         error: null,
       };
     case "playing":
       return {
         ...state,
         status: "playing",
-        data: null,
         error: action.error,
       };
     default:
@@ -33,9 +31,8 @@ const reducer = (state, action) => {
 export default function useSimpleReducer(initialState = {}) {
   const [state, dispatch] = useReducer(reducer, {
     status: "starting",
-    data: null,
+    data: {mode: "explosive"},
     loading: null,
-    payload: null,
     error: null,
     ...initialState,
   });

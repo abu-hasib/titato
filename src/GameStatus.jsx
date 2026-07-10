@@ -21,7 +21,7 @@ export function GameStatus({ gameState, playerTurn }) {
   return (
     <Box
       sx={{
-        padding: { xs: '12px', sm: '16px' },
+        padding: { xs: '.2em', sm: '.5em' },
         backgroundColor: '#4a3728',
         border: '2px solid #8b6f47',
         borderRadius: '8px',
@@ -30,7 +30,7 @@ export function GameStatus({ gameState, playerTurn }) {
     >
       <Typography
         sx={{
-          fontSize: { xs: '1rem', sm: '1.3rem' },
+          fontSize: { xs: '.5rem', sm: '1rem' },
           fontWeight: 'bold',
           color: getStatusColor(),
           textShadow: '1px 1px 3px rgba(0,0,0,0.7)',

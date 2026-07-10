@@ -7,6 +7,7 @@ import {
   createTheme,
   Stack,
   Button,
+  Grid,
 } from "@mui/material";
 import { SplashScreen } from "./SplashScreen";
 import { GameBoard } from "./GameBoard";
@@ -18,11 +19,15 @@ import { SoundManager } from "./SoundManager";
 import useSimpleReducer from "./hooks/useSimpleReducer";
 import GameTitle from "/images/gametitle.png";
 import PlayNow from "/images/cta.png";
+import GameButton from "./components/GameButton";
 
 const theme = createTheme({
   palette: {
     background: {
       default: "#2c1810",
+    },
+    accent: {
+      default: "#fca136",
     },
   },
   typography: {
@@ -31,14 +36,15 @@ const theme = createTheme({
 });
 
 function App() {
-  const { status, dispatch } = useSimpleReducer({});
+  const { status, data, dispatch } = useSimpleReducer({});
   const [showSplash, setShowSplash] = useState(true);
   const [board, setBoard] = useState(initializeGame());
   const [gameState, setGameState] = useState("playing");
   const [playerTurn, setPlayerTurn] = useState(true);
   const [difficulty, setDifficulty] = useState("medium");
   const [scores, setScores] = useState({ player1: 0, player2: 0 });
-
+  const { mode } = data || {};
+  const isExplosive = mode === "explosive";
   useEffect(() => {
     SoundManager.init();
     const timer = setTimeout(() => {
@@ -77,7 +83,7 @@ function App() {
 
       const newBoard = [...board];
       newBoard[index] = "X";
-      SoundManager.playSword();
+      isExplosive && SoundManager.playSword();
 
       if (checkGameEnd(newBoard)) {
         setBoard(newBoard);
@@ -93,14 +99,14 @@ function App() {
 
         const computerBoard = [...newBoard];
         computerBoard[computerMove] = "O";
-        SoundManager.playBomb();
+        isExplosive && SoundManager.playBomb();
 
         checkGameEnd(computerBoard);
         setBoard(computerBoard);
         setPlayerTurn(true);
       }, 500);
     },
-    [board, playerTurn, gameState, difficulty, checkGameEnd],
+    [board, playerTurn, gameState, difficulty, isExplosive, checkGameEnd],
   );
 
   const handleNewGame = useCallback(() => {
@@ -112,6 +118,128 @@ function App() {
   const handleDifficultyChange = (newDifficulty) => {
     setDifficulty(newDifficulty);
   };
+
+  const getGame = (mode) => {
+    if (!mode) return;
+    let game;
+    switch (mode) {
+      case "explosive":
+        game = (
+          <ThemeProvider theme={theme}>
+            <Box
+              sx={{
+                backgroundImage: "url(/images/bg-image.png)",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center center",
+                backgroundSize: "cover",
+                height: "100vh",
+              }}
+            >
+              <Box
+                component="button"
+                onClick={() => {
+                  dispatch({ type: "waiting" });
+                  handleNewGame();
+                }}
+                sx={{
+                  cursor: "pointer",
+                  background: "transparent",
+                  transition: "transform 0.15s ease, filter 0.15s ease",
+                  filter: "drop-shadow(0 12px 18px rgba(0,0,0,0.35))",
+                  transformOrigin: "center",
+                  border: "none",
+                  "&:hover": {
+                    transform: "translateY(-3px) rotate(-1deg)",
+                    filter: "drop-shadow(0 16px 24px rgba(0,0,0,0.42))",
+                  },
+                  "&:active": {
+                    transform: "translateY(4px) rotate(1deg)",
+                    filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.28))",
+                  },
+                }}
+                width="50%"
+              >
+                <img
+                  src="/images/back.png"
+                  width={150}
+                  alt=""
+                  style={{ rotate: "180deg" }}
+                />
+              </Box>
+              <Container
+                maxWidth="sm"
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "20px",
+                  alignItems: "center",
+                }}
+              >
+                <Stack direction="row" spacing={4} alignItems="center">
+                  <ScoreBoard score={scores.player1} player="⚔️" />
+                  <GameStatus gameState={gameState} playerTurn={playerTurn} />
+                  <ScoreBoard score={scores.player2} player="🗡️" />
+                </Stack>
+                <GameBoard
+                  board={board}
+                  onCellClick={handleCellClick}
+                  disabled={!playerTurn || gameState !== "playing"}
+                  mode={mode}
+                />
+
+                <GameControls
+                  difficulty={difficulty}
+                  onDifficultyChange={handleDifficultyChange}
+                  onNewGame={handleNewGame}
+                />
+              </Container>
+            </Box>
+          </ThemeProvider>
+        );
+        break;
+      case "boring":
+        game = (
+          <>
+            <Container maxWidth="md" component={Box} paddingBlock="1em">
+              <Button onClick={() =>  {
+                dispatch({ type: "waiting" })
+                handleNewGame()
+              }}>
+                Go back
+              </Button>
+
+              <Box paddingBlock="6em">
+                <Stack
+                  alignItems="center"
+                  justifyContent="center"
+                  component={Container}
+                  maxWidth="sm"
+                >
+                  <GameBoard
+                    board={board}
+                    onCellClick={handleCellClick}
+                    disabled={!playerTurn || gameState !== "playing"}
+                    mode={mode}
+                  />
+                </Stack>
+              </Box>
+            </Container>
+          </>
+        );
+        break;
+      default:
+        break;
+    }
+    return game;
+  };
+
+  switch (mode) {
+    case "explosive":
+      break;
+
+    default:
+      break;
+  }
 
   if (status === "starting") {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
@@ -127,110 +255,43 @@ function App() {
           height: "100vh",
         }}
       >
-        <Stack alignItems="center" height="90%" justifyContent="space-between">
+        <Stack alignItems="center" height="90%">
           <Box>
-            <img src={GameTitle} alt="title" width={500} />
+            <img src={GameTitle} alt="title" width={400} />
           </Box>
-          <Box
-            component="button"
-            type="button"
-            onClick={() => dispatch({ type: "playing" })}
-            sx={{
-              border: "none",
-              background: "transparent",
-              padding: 0,
-              cursor: "pointer",
-              appearance: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "transform 0.15s ease, filter 0.15s ease",
-              filter: "drop-shadow(0 12px 18px rgba(0,0,0,0.35))",
-              transformOrigin: "center",
-              "&:hover": {
-                transform: "translateY(-3px) rotate(-1deg)",
-                filter: "drop-shadow(0 16px 24px rgba(0,0,0,0.42))",
-              },
-              "&:active": {
-                transform: "translateY(4px) rotate(1deg)",
-                filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.28))",
-              },
-            }}
-          >
-            <img src={PlayNow} alt="Play now" width={500} />
+          <Box>
+            <Stack alignItems="center">
+              <Typography variant="h6" color="#fca136">
+                Mood
+              </Typography>
+              <Grid container>
+                <Box width={200}>
+                  <GameButton
+                    src={PlayNow}
+                    dispatch={dispatch}
+                    type="waiting"
+                    data={{ mode: "explosive" }}
+                  />
+                </Box>
+                <Box width={200}>
+                  <GameButton
+                    src={PlayNow}
+                    dispatch={dispatch}
+                    type="waiting"
+                    data={{ mode: "boring" }}
+                  />
+                </Box>
+              </Grid>
+            </Stack>
+          </Box>
+          <Box width={300}>
+            <GameButton src={PlayNow} dispatch={dispatch} type="playing" />
           </Box>
         </Stack>
       </Box>
     );
   } else if (status === "playing") {
-    return (
-      <ThemeProvider theme={theme}>
-        <Box
-          sx={{
-            backgroundImage: "url(/images/bg-image.png)",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-            backgroundSize: "cover",
-            height: "100vh",
-          }}
-        >
-          <Box
-            component="button"
-            onClick={() => dispatch({ type: "waiting" })}
-            sx={{
-              cursor: "pointer",
-              background: "transparent",
-              transition: "transform 0.15s ease, filter 0.15s ease",
-              filter: "drop-shadow(0 12px 18px rgba(0,0,0,0.35))",
-              transformOrigin: "center",
-              border: "none",
-              "&:hover": {
-                transform: "translateY(-3px) rotate(-1deg)",
-                filter: "drop-shadow(0 16px 24px rgba(0,0,0,0.42))",
-              },
-              "&:active": {
-                transform: "translateY(4px) rotate(1deg)",
-                filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.28))",
-              },
-            }}
-            width="50%"
-          >
-            <img
-              src="/images/back.png"
-              width={200}
-              alt=""
-              style={{ rotate: "180deg" }}
-            />
-          </Box>
-          <Container
-            maxWidth="sm"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "20px",
-              alignItems: "center",
-            }}
-          >
-            <Stack direction="row" spacing={4} alignItems="center">
-              <ScoreBoard score={scores.player1} player="⚔️" />
-              <GameStatus gameState={gameState} playerTurn={playerTurn} />
-              <ScoreBoard score={scores.player2} player="🗡️" />
-            </Stack>
-            <GameBoard
-              board={board}
-              onCellClick={handleCellClick}
-              disabled={!playerTurn || gameState !== "playing"}
-            />
-
-            <GameControls
-              difficulty={difficulty}
-              onDifficultyChange={handleDifficultyChange}
-              onNewGame={handleNewGame}
-            />
-          </Container>
-        </Box>
-      </ThemeProvider>
-    );
+    return getGame(mode);
   }
 }
 
@@ -238,7 +299,7 @@ function ScoreBoard({ score, player }) {
   return (
     <Box
       sx={{
-        padding: { xs: "12px", sm: "16px" },
+        padding: { xs: ".2em", sm: ".5em" },
         backgroundColor: "#4a3728",
         border: "2px solid #8b6f47",
         borderRadius: "8px",
@@ -247,7 +308,7 @@ function ScoreBoard({ score, player }) {
     >
       <Typography
         sx={{
-          fontSize: { xs: "1rem", sm: "1.3rem" },
+          fontSize: { xs: ".5rem", sm: "1rem" },
           fontWeight: "bold",
           color: "#fca136",
           textShadow: "1px 1px 3px rgba(0,0,0,0.7)",
