@@ -10,6 +10,7 @@ import {
   Grid,
   Select,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
 import { SplashScreen } from "./SplashScreen";
 import { GameBoard } from "./GameBoard";
@@ -21,7 +22,11 @@ import { SoundManager } from "./SoundManager";
 import useSimpleReducer from "./hooks/useSimpleReducer";
 import GameTitle from "/images/gametitle.png";
 import PlayNow from "/images/cta.png";
+import Explosive from "/images/explo.png";
+import Boring from "/images/boring.png";
 import GameButton from "./components/GameButton";
+import "./App.css";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 const theme = createTheme({
   palette: {
@@ -165,6 +170,8 @@ function App() {
                   src="/images/back.png"
                   width={150}
                   alt=""
+                  decoding="async"
+                  loading="lazy"
                   style={{ rotate: "180deg" }}
                 />
               </Box>
@@ -207,14 +214,22 @@ function App() {
         game = (
           <>
             <Container maxWidth="md" component={Box} paddingBlock="1em">
-              <Button
-                onClick={() => {
-                  dispatch({ type: "waiting" });
-                  handleNewGame();
-                }}
-              >
-                Go back
-              </Button>
+              <Tooltip title="back to menu">
+                <Button
+                  aria-label="Go to"
+                  sx={{
+                    textTransform: "none",
+                    color: "#ffd700"
+                  }}
+                  onClick={() => {
+                    dispatch({ type: "waiting" });
+                    handleNewGame();
+                  }}
+                  startIcon={<KeyboardBackspaceIcon />}
+                >
+                  Go Back
+                </Button>
+              </Tooltip>
 
               <Box paddingBlock="6em">
                 <Stack
@@ -267,34 +282,37 @@ function App() {
       >
         <Stack alignItems="center" height="90%">
           <Box>
-            <img src={GameTitle} alt="title" width={400} />
+            <img src={GameTitle} alt="title" width={290} decoding="async" loading="lazy" />
           </Box>
           <Box flex={1}>
-            <Stack alignItems="center" justifyContent="start">
+            <Stack alignItems="center">
               <Typography
                 alignSelf="start"
+                gutterBottom
                 sx={{
                   color: "#d4af37",
                   fontSize: { xs: "0.9rem", sm: "1rem" },
-                  marginBottom: 0,
+                  marginBottom: "2em",
                   fontWeight: "bold",
                 }}
               >
                 Choose Mood
               </Typography>
               <Grid container>
-                <Box>
+                <Box component={Stack} alignItems="center">
+                  {mode === "explosive" && <Flame />}
                   <GameButton
-                    src={PlayNow}
+                    src={Explosive}
                     dispatch={dispatch}
                     type="waiting"
                     data={{ mode: "explosive" }}
                     styles={{ width: "100%", height: "70px" }}
                   />
                 </Box>
-                <Box>
+                <Box component={Stack} alignItems="center">
+                  {mode === "boring" && <Flame />}
                   <GameButton
-                    src={PlayNow}
+                    src={Boring}
                     dispatch={dispatch}
                     type="waiting"
                     data={{ mode: "boring" }}
@@ -385,6 +403,17 @@ function ScoreBoard({ score, player, mode }) {
   );
 }
 
-
+function Flame() {
+  return (
+    <Box className="container">
+      <Box className="red flame" />
+      <Box className="orange flame" />
+      <Box className="yellow flame" />
+      {/* <Box className="white flame" /> */}
+      {/* <Box className="blue circle" /> */}
+      {/* <Box className="black circle" /> */}
+    </Box>
+  );
+}
 
 export default App;

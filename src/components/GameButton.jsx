@@ -29,7 +29,7 @@ const GameButton = ({ src, dispatch, type, data, styles }) => {
         },
       }}
     >
-      <img src={src} alt="Play now" {...styles}/>
+      <img src={src} alt="Play now" loading="lazy" decoding="async" {...styles} />
     </Box>
   );
 };
