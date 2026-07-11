@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 
-const GameButton = ({ src, dispatch, type, data }) => {
+const GameButton = ({ src, dispatch, type, data, styles }) => {
   return (
     <Box
       component="button"
@@ -29,7 +29,7 @@ const GameButton = ({ src, dispatch, type, data }) => {
         },
       }}
     >
-      <img src={src} alt="Play now" width="100%" />
+      <img src={src} alt="Play now" {...styles}/>
     </Box>
   );
 };

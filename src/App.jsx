@@ -8,6 +8,8 @@ import {
   Stack,
   Button,
   Grid,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { SplashScreen } from "./SplashScreen";
 import { GameBoard } from "./GameBoard";
@@ -41,7 +43,7 @@ function App() {
   const [board, setBoard] = useState(initializeGame());
   const [gameState, setGameState] = useState("playing");
   const [playerTurn, setPlayerTurn] = useState(true);
-  const [difficulty, setDifficulty] = useState("medium");
+  const [difficulty, setDifficulty] = useState("easy");
   const [scores, setScores] = useState({ player1: 0, player2: 0 });
   const { mode } = data || {};
   const isExplosive = mode === "explosive";
@@ -177,7 +179,11 @@ function App() {
               >
                 <Stack direction="row" spacing={4} alignItems="center">
                   <ScoreBoard score={scores.player1} player="⚔️" />
-                  <GameStatus gameState={gameState} playerTurn={playerTurn} />
+                  <GameStatus
+                    gameState={gameState}
+                    playerTurn={playerTurn}
+                    mode={mode}
+                  />
                   <ScoreBoard score={scores.player2} player="🗡️" />
                 </Stack>
                 <GameBoard
@@ -201,10 +207,12 @@ function App() {
         game = (
           <>
             <Container maxWidth="md" component={Box} paddingBlock="1em">
-              <Button onClick={() =>  {
-                dispatch({ type: "waiting" })
-                handleNewGame()
-              }}>
+              <Button
+                onClick={() => {
+                  dispatch({ type: "waiting" });
+                  handleNewGame();
+                }}
+              >
                 Go back
               </Button>
 
@@ -214,7 +222,17 @@ function App() {
                   justifyContent="center"
                   component={Container}
                   maxWidth="sm"
+                  spacing={2}
                 >
+                  <Stack direction="row" spacing={4} alignItems="center">
+                    <ScoreBoard score={scores.player1} player="X" mode={mode} />
+                    <GameStatus
+                      gameState={gameState}
+                      playerTurn={playerTurn}
+                      mode={mode}
+                    />
+                    <ScoreBoard score={scores.player2} player="O" mode={mode} />
+                  </Stack>
                   <GameBoard
                     board={board}
                     onCellClick={handleCellClick}
@@ -232,14 +250,6 @@ function App() {
     }
     return game;
   };
-
-  switch (mode) {
-    case "explosive":
-      break;
-
-    default:
-      break;
-  }
 
   if (status === "starting") {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
@@ -259,33 +269,85 @@ function App() {
           <Box>
             <img src={GameTitle} alt="title" width={400} />
           </Box>
-          <Box>
-            <Stack alignItems="center">
-              <Typography variant="h6" color="#fca136">
-                Mood
+          <Box flex={1}>
+            <Stack alignItems="center" justifyContent="start">
+              <Typography
+                alignSelf="start"
+                sx={{
+                  color: "#d4af37",
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
+                  marginBottom: 0,
+                  fontWeight: "bold",
+                }}
+              >
+                Choose Mood
               </Typography>
               <Grid container>
-                <Box width={200}>
+                <Box>
                   <GameButton
                     src={PlayNow}
                     dispatch={dispatch}
                     type="waiting"
                     data={{ mode: "explosive" }}
+                    styles={{ width: "100%", height: "70px" }}
                   />
                 </Box>
-                <Box width={200}>
+                <Box>
                   <GameButton
                     src={PlayNow}
                     dispatch={dispatch}
                     type="waiting"
                     data={{ mode: "boring" }}
+                    styles={{ width: "100%", height: "70px" }}
                   />
                 </Box>
               </Grid>
+              <Box width="100%">
+                <Typography
+                  sx={{
+                    color: "#d4af37",
+                    fontSize: { xs: "0.9rem", sm: "1rem" },
+                    marginBottom: "8px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Difficulty
+                </Typography>
+                <Select
+                  value={difficulty}
+                  onChange={(e) => handleDifficultyChange(e.target.value)}
+                  sx={{
+                    width: "100%",
+                    padding: ".2em .5em",
+                    height: "2.5em",
+                    backgroundColor: "#5d4037",
+                    color: "#d4af37",
+                    border: "2px solid #8b6f47",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#8b6f47",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#d4af37",
+                    },
+                    "& .MuiSvgIcon-root": {
+                      color: "#d4af37",
+                    },
+                  }}
+                >
+                  <MenuItem value="easy">Easy (Random)</MenuItem>
+                  <MenuItem value="medium">Medium (Smart)</MenuItem>
+                  <MenuItem value="hard">Hard (Unbeatable)</MenuItem>
+                </Select>
+              </Box>
             </Stack>
           </Box>
           <Box width={300}>
-            <GameButton src={PlayNow} dispatch={dispatch} type="playing" />
+            <GameButton
+              src={PlayNow}
+              dispatch={dispatch}
+              type="playing"
+              styles={{ width: "300px" }}
+            />
           </Box>
         </Stack>
       </Box>
@@ -295,13 +357,14 @@ function App() {
   }
 }
 
-function ScoreBoard({ score, player }) {
+function ScoreBoard({ score, player, mode }) {
+  const isBoring = mode === "boring";
   return (
     <Box
       sx={{
         padding: { xs: ".2em", sm: ".5em" },
-        backgroundColor: "#4a3728",
-        border: "2px solid #8b6f47",
+        ...(!isBoring && { backgroundColor: "#4a3728" }),
+        ...(!isBoring && { border: "2px solid #8b6f47" }),
         borderRadius: "8px",
         textAlign: "center",
       }}
@@ -310,8 +373,8 @@ function ScoreBoard({ score, player }) {
         sx={{
           fontSize: { xs: ".5rem", sm: "1rem" },
           fontWeight: "bold",
-          color: "#fca136",
-          textShadow: "1px 1px 3px rgba(0,0,0,0.7)",
+          ...(!isBoring && { color: "#fca136" }),
+          ...(!isBoring && { textShadow: "1px 1px 3px rgba(0,0,0,0.7)" }),
           textTransform: "uppercase",
           letterSpacing: "1px",
         }}
@@ -321,5 +384,7 @@ function ScoreBoard({ score, player }) {
     </Box>
   );
 }
+
+
 
 export default App;
