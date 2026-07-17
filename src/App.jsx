@@ -55,7 +55,7 @@ function App() {
     SoundManager.init();
     const timer = setTimeout(() => {
       dispatch({ type: "waiting" });
-    }, 10000);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
