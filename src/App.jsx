@@ -1,32 +1,32 @@
-import { useState, useEffect, useCallback } from "react";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
   Box,
-  Container,
-  Typography,
-  ThemeProvider,
-  createTheme,
-  Stack,
   Button,
+  Container,
+  createTheme,
   Grid,
-  Select,
   MenuItem,
+  Select,
+  Stack,
+  ThemeProvider,
   Tooltip,
+  Typography,
 } from "@mui/material";
-import { SplashScreen } from "./SplashScreen";
-import { GameBoard } from "./GameBoard";
-import { GameStatus } from "./GameStatus";
-import { GameControls } from "./GameControls";
-import { initializeGame, getWinner, isBoardFull } from "./gameLogic";
+import { useCallback, useEffect, useState } from "react";
 import { getComputerMove } from "./AI";
+import "./App.css";
+import { GameBoard } from "./GameBoard";
+import { GameControls } from "./GameControls";
+import { GameStatus } from "./GameStatus";
 import { SoundManager } from "./SoundManager";
+import { SplashScreen } from "./SplashScreen";
+import GameButton from "./components/GameButton";
+import { getWinner, initializeGame, isBoardFull } from "./gameLogic";
 import useSimpleReducer from "./hooks/useSimpleReducer";
-import GameTitle from "/images/gametitle.png";
+import Boring from "/images/boring.png";
 import PlayNow from "/images/cta.png";
 import Explosive from "/images/explo.png";
-import Boring from "/images/boring.png";
-import GameButton from "./components/GameButton";
-import "./App.css";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import GameTitle from "/images/gametitle.png";
 
 const theme = createTheme({
   palette: {
@@ -44,7 +44,6 @@ const theme = createTheme({
 
 function App() {
   const { status, data, dispatch } = useSimpleReducer({});
-  const [showSplash, setShowSplash] = useState(true);
   const [board, setBoard] = useState(initializeGame());
   const [gameState, setGameState] = useState("playing");
   const [playerTurn, setPlayerTurn] = useState(true);
@@ -56,7 +55,7 @@ function App() {
     SoundManager.init();
     const timer = setTimeout(() => {
       dispatch({ type: "waiting" });
-    }, 2500);
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -267,7 +266,7 @@ function App() {
   };
 
   if (status === "starting") {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+    return <SplashScreen />;
   } else if (status === "waiting") {
     return (
       <Box
