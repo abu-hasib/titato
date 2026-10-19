@@ -65,13 +65,13 @@ function App() {
     if (winner === "X") {
       setGameState("player-win");
       SoundManager.playVictorySound();
-      setScores((prev) => ({ ...prev, player1: prev.player1++ }));
+      setScores((prev) => ({ ...prev, player1: prev.player1 + 1 }));
       return true;
     }
     if (winner === "O") {
       setGameState("computer-win");
       SoundManager.playVictorySound();
-      setScores((prev) => ({ ...prev, player2: prev.player2++ }));
+      setScores((prev) => ({ ...prev, player2: prev.player2 + 1 }));
       return true;
     }
     if (isBoardFull(currentBoard)) {
